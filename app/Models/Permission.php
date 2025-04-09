@@ -163,10 +163,10 @@ class Permission extends Model
 
         // Controls permissions for editing or viewing a server's startup parameters.
         'startup' => [
-            'description' => 'Permissions that control a user\'s ability to view this server\'s startup parameters.',
+            'description' => 'Permissions that control a user\'s ability to view and modify this server\'s startup parameters.',
             'keys' => [
                 'read' => 'Allows a user to view the startup variables for a server.',
-                'update' => 'Allows a user to modify the startup variables for the server.',
+                'update' => 'Allows a user to modify the startup variables, startup command, nest, and egg for the server.',
                 'docker-image' => 'Allows a user to modify the Docker image used when running the server.',
             ],
         ],

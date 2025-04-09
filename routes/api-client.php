@@ -18,6 +18,7 @@ use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 */
 Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.index');
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
+Route::get('/nests', [Client\Servers\StartupDetailsController::class, 'nests']);
 
 Route::prefix('/account')->middleware(AccountSubject::class)->group(function () {
     Route::prefix('/')->withoutMiddleware(RequireTwoFactorAuthentication::class)->group(function () {
@@ -131,6 +132,8 @@ Route::group([
 
     Route::group(['prefix' => '/startup'], function () {
         Route::get('/', [Client\Servers\StartupController::class, 'index']);
+        Route::get('/details', [Client\Servers\StartupDetailsController::class, 'index']);
+        Route::post('/update', [Client\Servers\StartupDetailsController::class, 'update']);
         Route::put('/variable', [Client\Servers\StartupController::class, 'update']);
     });
 

@@ -49,6 +49,8 @@ class StartupModificationService
 
             if ($this->isUserLevel(User::USER_LEVEL_ADMIN)) {
                 $this->updateAdministrativeSettings($data, $server);
+            } else if ($this->isUserLevel(User::USER_LEVEL_USER)) {
+                $this->updateUserSettings($data, $server);
             }
 
             // Calling ->refresh() rather than ->fresh() here causes it to return the
@@ -83,6 +85,30 @@ class StartupModificationService
             'startup' => $data['startup'] ?? $server->startup,
             'skip_scripts' => $data['skip_scripts'] ?? isset($data['skip_scripts']),
             'image' => $data['docker_image'] ?? $server->image,
+        ])->save();
+    }
+    
+    /**
+     * Update settings for a server as a regular user.
+     */
+    protected function updateUserSettings(array $data, Server &$server): void
+    {
+        $eggId = Arr::get($data, 'egg_id');
+        $nestId = Arr::get($data, 'nest_id');
+
+        if (is_digit($eggId) && is_digit($nestId) && ($server->egg_id !== (int) $eggId || $server->nest_id !== (int) $nestId)) {
+            /** @var \Pterodactyl\Models\Egg $egg */
+            $egg = Egg::query()->where('id', $eggId)->where('nest_id', $nestId)->firstOrFail();
+
+            $server = $server->forceFill([
+                'egg_id' => $egg->id,
+                'nest_id' => $egg->nest_id,
+            ]);
+        }
+
+        $server->fill([
+            'startup' => $data['startup'] ?? $server->startup,
+            'skip_scripts' => $data['skip_scripts'] ?? isset($data['skip_scripts']),
         ])->save();
     }
 }
